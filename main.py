@@ -15,7 +15,7 @@ class Item(BaseModel):
     price: float
     count: int
     id: int
-    category: int
+    category: Category
 
 items = {
     0: Item(name='Hammer', price=9.99, count=20, id=0, category=Category.TOOLS),
@@ -28,6 +28,7 @@ FastAPI handles JSON serialization and deserialization for us.
 We can simply use bult-in python and Pydantic types, in this case dict[int, Item]
 '''
 @app.get("/")
-def index():
+def index() -> dict[str, dict[int, Item]]:
+# def index():
     return {'items': items}
 
