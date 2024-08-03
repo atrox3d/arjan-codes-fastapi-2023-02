@@ -23,3 +23,11 @@ items = {
     2: Item(name='Nails', price=1.99, count=20, id=2, category=Category.CONSUMABLES),
 }
 
+'''
+FastAPI handles JSON serialization and deserialization for us.
+We can simply use bult-in python and Pydantic types, in this case dict[int, Item]
+'''
+@app.get("/")
+def index() -> dict[str, dict[int, Item]]:
+    return {'items': items}
+
