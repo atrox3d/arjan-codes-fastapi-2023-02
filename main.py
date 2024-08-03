@@ -1,7 +1,7 @@
 from curses.ascii import GS
 from enum import Enum
 from unicodedata import category
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -31,4 +31,11 @@ We can simply use bult-in python and Pydantic types, in this case dict[int, Item
 def index() -> dict[str, dict[int, Item]]:
 # def index():
     return {'items': items}
+
+@app.get("/items/{item_id}")
+def get_item(item_id:int) -> Item:
+    if item_id not in items:
+        raise HTTPException(status_code=404)
+    else:
+        return items[item_id]
 
