@@ -17,11 +17,12 @@ class Item(BaseModel):
     id: int
     category: Category
 
-items = {
+original_items = {
     0: Item(name='Hammer', price=9.99, count=20, id=0, category=Category.TOOLS),
     1: Item(name='Pliers', price=5.99, count=20, id=1, category=Category.TOOLS),
     2: Item(name='Nails', price=1.99, count=20, id=2, category=Category.CONSUMABLES),
 }
+items = original_items.copy()
 
 '''
 FastAPI handles JSON serialization and deserialization for us.
@@ -50,9 +51,8 @@ def query_items_by_parameters(
     price: float|None=None,
     count: int|None=None,
     category: Category|None=None
-# ) -> dict[str, Selection]:
+# ) -> dict[str, Selection]: # error
 ) -> dict[str, Selection|list[Item]]:
-# ) -> int:
     def check_item(item:Item) -> bool:
         return all(
             (            
@@ -68,3 +68,18 @@ def query_items_by_parameters(
         'query': dict(name=name, price=price, count=count, category=category),
         'selection': selection
     }
+
+@app.get('/reset')
+def add_item() -> dict[str, dict]:
+    global items
+    items = original_items.copy()
+    return {'reset': items}
+
+@app.post('/')
+def add_item(item:Item) -> dict[str, Item]:
+    
+    if item.id  in items:
+        raise HTTPException(status_code=400, detail=f'{item.id=} already exists')
+
+    items[item.id] = item
+    return {'added': item}

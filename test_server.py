@@ -28,7 +28,7 @@ def nails() -> dict:
 
 @pytest.fixture
 def items(hammer: dict, pliers: dict, nails: dict) -> dict:
-    return {'items': {'0': hammer, '1': pliers, '2': nails}}
+    return {'0': hammer, '1': pliers, '2': nails}
 
 @pytest.fixture
 def not_found() -> dict:
@@ -48,7 +48,7 @@ def test_reachable(server):
 def test_index(server, items):
     response = requests.get(server)
     assert response.status_code == 200
-    assert response.json() == items
+    assert response.json() == {'items': items}
 
 def test_item_0_hammer(server, hammer):
     response = requests.get(f'{server}/items/0')
@@ -67,3 +67,14 @@ def test_query_parameters(server, query, nails):
     assert response.json()['selection'] == [nails]
     assert response.json() == {'query': query, 'selection': [nails]}
 
+def test_reset_items(server, items):
+    response = requests.get(f'{server}/reset')
+    assert response.status_code == 200
+    assert response.json() == {'reset': items}
+
+def test_add_item(server, hammer):
+    payload = hammer.copy()
+    payload['id'] = 99
+    response = requests.post(f'{server}', json=payload)
+    assert response.status_code == 200
+    assert response.json() == {'added': payload}
