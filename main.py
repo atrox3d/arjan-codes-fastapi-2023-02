@@ -83,3 +83,27 @@ def add_item(item:Item) -> dict[str, Item]:
 
     items[item.id] = item
     return {'added': item}
+
+@app.put('/update/{item_id}')
+def update(
+        item_id: int,
+        name: str|None=None,
+        price: float|None=None,
+        count: int|None=None,
+        # category: Category|None=None
+# ) -> dict[str, Item]:
+) -> dict:
+    params = {k:v for k,v in locals().items() 
+              if v is not None and k != 'item_id'}
+    # return params
+
+    if item_id not in items:
+        raise HTTPException(status_code=404)
+
+    if all(info is None for info in (name, price, count)):
+        raise HTTPException(status_code=400, 
+                            detail='no parameters')
+    item = items[item_id]
+    for k, v in params.items():
+        setattr(item, k, v)
+    return {'updated': item}

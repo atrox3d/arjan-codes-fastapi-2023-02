@@ -78,3 +78,12 @@ def test_add_item(server, hammer):
     response = requests.post(f'{server}', json=payload)
     assert response.status_code == 200
     assert response.json() == {'added': payload}
+
+def test_update_item(server, pliers):
+    response = requests.put(f'{server}/update/1?name=ciao')
+    # response = requests.put(f'{server}/update/1')
+    print(response.json())
+    assert response.status_code == 200
+    updated = pliers.copy()
+    updated['name'] = 'ciao'
+    assert response.json() == {'updated': updated}
