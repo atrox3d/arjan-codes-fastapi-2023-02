@@ -107,3 +107,11 @@ def update(
     for k, v in params.items():
         setattr(item, k, v)
     return {'updated': item}
+
+@app.delete('/delete/{item_id}')
+def delete(item_id:int) -> dict:
+    if item_id not in items:
+        raise HTTPException(status_code=404)
+
+    item = items.pop(item_id)
+    return {'deleted': item}
